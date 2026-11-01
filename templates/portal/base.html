@@ -1,71 +1,115 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{% block title %}PetLink{% endblock %}</title>
-		<link rel="preconnect" href="https://images.unsplash.com" />
-		<link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-		<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%90%B6%3C/text%3E%3C/svg%3E" />
-		{% block extra_head %}{% endblock %}
-	</head>
-	<body>
-		<header class="navbar" id="navbar">
-			<div class="container nav-inner">
-				<a href="{% url 'home' %}" class="logo">🐾 PetLink</a>
-				<nav>
-					<button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
-					<ul class="nav-links" id="navLinks">
-						<li><a href="{% url 'home' %}#home">Home</a></li>
-						<li><a href="{% url 'about' %}">About</a></li>
-						<li><a href="{% url 'features' %}">Features</a></li>
-						<li><a href="{% url 'marketplace' %}">Buy & Sell</a></li>
-						<li><a href="{% url 'lost_found' %}">Lost & Found</a></li>
-						<li><a href="{% url 'blog' %}">Stories</a></li>
-						<li><a href="{% url 'contact' %}">Contact</a></li>
-						{% if user.is_authenticated %}
-							<li><a href="{% url 'logout' %}">Logout</a></li>
-						{% else %}
-							<li><a href="{% url 'login' %}">Login</a></li>
-						{% endif %}
-					</ul>
-				</nav>
-			</div>
-		</header>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}PetLink{% endblock %}</title>
 
-		<main>
-			{% if messages %}
-				<div class="container">
-					<ul class="messages">
-						{% for message in messages %}
-							<li class="message message-{{ message.tags }}">{{ message }}</li>
-						{% endfor %}
-					</ul>
-				</div>
-			{% endif %}
-			{% block content %}{% endblock %}
-		</main>
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
 
-		<a href="{% url 'lost_found' %}" class="floating-btn" id="reportBtn" title="Report Lost Pet">🐾</a>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%90%B6%3C/text%3E%3C/svg%3E" />
 
-		<footer class="footer">
-			<div class="container footer-inner">
-				<div>
-					<strong>PetLink</strong>
-					<p>Connecting pets with the people who love them.</p>
-				</div>
-				<ul class="footer-links">
-					<li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li>
-					<li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
-					<li><a href="mailto:hello@petlink.example">Contact</a></li>
-				</ul>
-				<p class="copyright">© <span id="year"></span> PetLink. All rights reserved.</p>
-			</div>
-		</footer>
+    {% block extra_head %}{% endblock %}
+</head>
 
-		<script src="{% static 'js/main.js' %}"></script>
-		{% block extra_js %}{% endblock %}
-	</body>
+<body>
+    <header class="navbar" id="navbar">
+        <div class="container nav-inner">
+            <a href="{% url 'home' %}" class="logo">🐾 PetLink</a>
+
+            <nav>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="{% url 'home' %}#home">Home</a></li>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'features' %}">Features</a></li>
+                    <li><a href="{% url 'marketplace' %}">Buy & Sell</a></li>
+                    <li><a href="{% url 'lost_found' %}">Lost & Found</a></li>
+                    <li><a href="{% url 'blog' %}">Stories</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+
+                    {% if user.is_authenticated %}
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="margin: 0; padding: 0;">
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="logout-btn"
+                                style="
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background: transparent;
+                                    border: none;
+                                    padding: 0.5rem 0.75rem;
+                                    border-radius: 999px;
+                                    color: #3aaaf7;
+                                    font-family: inherit;
+                                    font-size: inherit;
+                                    font-weight: 400;
+                                    line-height: inherit;
+                                    cursor: pointer;
+                                    transition: background 0.2s ease, color 0.2s ease;
+                                "
+                                onmouseover="this.style.background='#7ecbff'; this.style.color='#0f1b2d';"
+                                onmouseout="this.style.background='transparent'; this.style.color='#3aaaf7';"
+                            >
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'login' %}">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+        <div class="container">
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="message message-{{ message.tags }}">
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <a href="{% url 'lost_found' %}" class="floating-btn" id="reportBtn" title="Report Lost Pet">🐾</a>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div>
+                <strong>PetLink</strong>
+                <p>Connecting pets with the people who love them.</p>
+            </div>
+
+            <ul class="footer-links">
+                <li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li>
+                <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+                <li><a href="mailto:hello@petlink.example">Contact</a></li>
+            </ul>
+
+            <p class="copyright">
+                © <span id="year"></span> PetLink. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
 </html>
-
