@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - PetLink</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
     <style>
         .signup-container {
             max-width: 500px;
@@ -15,71 +17,133 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+
         .login-link {
             text-align: center;
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
+
         .login-link a {
             color: #007BFF;
             text-decoration: none;
             font-weight: bold;
         }
+
         .login-link a:hover {
             text-decoration: underline;
         }
+
+        .signup-field {
+            margin-bottom: 20px;
+        }
+
+        .signup-field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .field-error {
+            color: red;
+            font-size: 12px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
     </style>
 </head>
+
 <body>
+
     {% include 'portal/navbar.html' %}
-    
+
     <div class="signup-container">
-        <h2 style="text-align: center; margin-bottom: 30px;">Create Account</h2>
-        
+
+        <h2 style="text-align: center; margin-bottom: 30px;">
+            Create Account
+        </h2>
+
         {% if form.non_field_errors %}
             <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
                 {{ form.non_field_errors }}
             </div>
         {% endif %}
-        
+
         <form method="post">
             {% csrf_token %}
-            
-            <div style="margin-bottom: 20px;">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Choose a username" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
-                {% if form.username.errors %}
-                    <span style="color: red; font-size: 12px;">{{ form.username.errors }}</span>
+
+            <!-- Username -->
+            <div class="signup-field">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+
+                {% for error in form.username.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <!-- Email -->
+            <div class="signup-field">
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+
+                {% for error in form.email.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <!-- Password -->
+            <div class="signup-field">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                {{ form.password1 }}
+
+                {% for error in form.password1.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+
+                {% if form.password1.help_text %}
+                    <div class="help-text">
+                        {{ form.password1.help_text|safe }}
+                    </div>
                 {% endif %}
             </div>
-            
-            <div style="margin-bottom: 20px;">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
+
+            <!-- Confirm Password -->
+            <div class="signup-field">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                {{ form.password2 }}
+
+                {% for error in form.password2.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
             </div>
-            
-            <div style="margin-bottom: 20px;">
-                <label for="password1">Password</label>
-                <input type="password" id="password1" name="password1" placeholder="Create a strong password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <label for="password2">Confirm Password</label>
-                <input type="password" id="password2" name="password2" placeholder="Confirm your password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
-            </div>
-            
+
+            <!-- Submit -->
             <button type="submit" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">
                 Sign Up
             </button>
+
         </form>
-        
-        <!-- Login Link -->
+
         <div class="login-link">
-            <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+            <p>
+                Already have an account?
+                <a href="{% url 'login' %}">Sign In</a>
+            </p>
         </div>
+
     </div>
-    
+
     {% include 'portal/footer.html' %}
+
 </body>
 </html>
