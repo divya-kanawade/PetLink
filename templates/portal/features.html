@@ -1,0 +1,52 @@
+{% extends "portal/base.html" %}
+{% block title %}Features — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Everything you need to care better</h1>
+			<p>Explore PetLink's most loved features.</p>
+		</div>
+	</section>
+
+	<section class="section reveal" id="lost-found">
+		<div class="container">
+			<h2>Interactive Features</h2>
+			<div class="feature-grid">
+				<div class="feature-card flip">
+					<div class="feature-face front">
+						<h3>Lost & Found</h3>
+						<p>Report and discover lost pets nearby.</p>
+					</div>
+					<div class="feature-face back">
+						<p>Post details, add photos, and notify your community instantly.</p>
+						<a href="{% url 'lost_found' %}" class="btn btn-soft">See Listings</a>
+					</div>
+				</div>
+
+				<div class="feature-card slide" id="health">
+					<div class="icon">💉</div>
+					<h3>Pet Health</h3>
+					<p>Track vaccinations, vet visits, and reminders.</p>
+				</div>
+
+				<div class="feature-card flip" id="marketplace">
+					<div class="feature-face front">
+						<h3>Marketplace</h3>
+						<p>Buy and sell trusted pet items.</p>
+					</div>
+					<div class="feature-face back">
+						<p>Secure messaging and easy listing management.</p>
+						<a href="{% url 'marketplace' %}" class="btn btn-soft">Start Selling</a>
+					</div>
+				</div>
+
+				<div class="feature-card slide">
+					<div class="icon">🤝</div>
+					<h3>Community</h3>
+					<p>Connect with local pet lovers and events.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+

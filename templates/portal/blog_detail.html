@@ -1,0 +1,43 @@
+{% extends "portal/base.html" %}
+{% block title %}{{ post.title }} — PetLink Stories{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>{{ post.title }}</h1>
+			<p>By {{ post.author_name }} on {{ post.published_at|date:"M d, Y" }}</p>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container two-col">
+			<div>
+				{% if post.cover_image %}
+					<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="image-card" />
+				{% endif %}
+			</div>
+			<div class="rich-text">
+				{{ post.content|linebreaks }}
+			</div>
+		</div>
+	</section>
+
+	<section class="section alt reveal">
+		<div class="container">
+			<h2>More stories</h2>
+			<div class="card-grid">
+				{% for item in related %}
+					<article class="card">
+						<div class="card-body">
+							<h3>{{ item.title }}</h3>
+							<p>{{ item.excerpt|default:item.content|truncatechars:120 }}</p>
+							<a class="btn btn-soft" href="{% url 'blog_detail' slug=item.slug %}">Read</a>
+						</div>
+					</article>
+				{% empty %}
+					<p>No related stories.</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+{% endblock %}
+

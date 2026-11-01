@@ -1,0 +1,120 @@
+{% extends "portal/base.html" %}
+{% block title %}PetLink — Find, Care, Connect{% endblock %}
+{% block content %}
+	<section id="home" class="hero">
+		<div class="hero-bg" aria-hidden="true">
+			<div class="paws"></div>
+			<div class="gradient"></div>
+		</div>
+		<div class="container hero-content reveal">
+			<h1>Where Pets and People Connect</h1>
+			<p>Find lost pets, track health, trade essentials, and meet fellow pet lovers.</p>
+			<div class="cta-row">
+				<a class="btn btn-primary" href="{% url 'lost_found' %}">Find Lost Pets</a>
+				<a class="btn btn-outline" href="{% url 'marketplace' %}">Buy or Sell Pets</a>
+				<a class="btn btn-soft" href="{% url 'health' %}">Track Health</a>
+			</div>
+		</div>
+		<div class="hero-gallery container reveal">
+			<div class="carousel" data-carousel>
+				<button class="carousel-btn prev" data-carousel-prev aria-label="Previous">‹</button>
+				<div class="carousel-track" data-carousel-track>
+					<img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1200&auto=format&fit=crop" alt="Happy dog" />
+					<img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=1200&auto=format&fit=crop" alt="Playful cat" />
+					<img src="https://images.unsplash.com/photo-1501706362039-c06b2d715385?q=80&w=1200&auto=format&fit=crop" alt="Colorful bird" />
+					<img src="https://images.unsplash.com/photo-1558944351-c3ad5338c9e1?q=80&w=1200&auto=format&fit=crop" alt="Puppy and kitten" />
+				</div>
+				<button class="carousel-btn next" data-carousel-next aria-label="Next">›</button>
+			</div>
+		</div>
+	</section>
+
+	<section class="section reveal" id="lost-found">
+		<div class="container">
+			<h2>Lost & Found</h2>
+			<p>Report lost pets or browse recent sightings in your area.</p>
+			<div class="card-grid">
+				{% for report in recent_reports %}
+					<article class="card pet-card">
+						{% if report.photo %}
+							<img src="{{ report.photo.url }}" alt="{{ report.pet_name }}" />
+						{% else %}
+							<img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1200&auto=format&fit=crop" alt="Lost pet placeholder" />
+						{% endif %}
+						<div class="card-body">
+							<h3>{{ report.pet_name }}</h3>
+							<p>{{ report.last_seen_location }} · {{ report.get_status_display }}</p>
+							<button class="btn btn-primary" onclick="window.location='{% url 'lost_found' %}'">View Details</button>
+						</div>
+					</article>
+				{% empty %}
+					<p>No reports yet. Post the first one!</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+
+	<section class="section alt reveal">
+		<div class="container">
+			<h2>Featured pets looking for homes</h2>
+			<div class="card-grid">
+				{% for pet in featured_pets %}
+					<article class="card pet-card">
+						{% if pet.image %}
+							<img src="{{ pet.image.url }}" alt="{{ pet.name }}" />
+						{% else %}
+							<img src="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?q=80&w=1200&auto=format&fit=crop" alt="Pet placeholder" />
+						{% endif %}
+						<div class="card-body">
+							<h3>{{ pet.name }} · {{ pet.get_species_display }}</h3>
+							<p>{{ pet.location|default:"Location TBD" }}</p>
+							<p>Status: {{ pet.get_status_display }}</p>
+							<button class="btn btn-outline" onclick="window.location='{% url 'marketplace' %}'">Contact Owner</button>
+						</div>
+					</article>
+				{% empty %}
+					<p>Be the first to list a pet for adoption.</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container">
+			<h2>Shop essentials</h2>
+			<div class="card-grid">
+				{% for product in featured_products %}
+					<article class="card">
+						<div class="card-body">
+							<h3>{{ product.name }}</h3>
+							<p>{{ product.get_category_display }} · ₹{{ product.price }}</p>
+							<button class="btn btn-primary" onclick="window.location='{% url 'shop' %}'">Explore</button>
+						</div>
+					</article>
+				{% empty %}
+					<p>Inventory is coming soon.</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+
+	<section id="testimonials" class="section alt reveal">
+		<div class="container">
+			<h2>Heartwarming Stories</h2>
+			<div class="testimonials" data-testimonials>
+				{% for post in latest_posts %}
+					<figure class="testimonial{% if forloop.first %} active{% endif %}">
+						<blockquote>{{ post.excerpt|default:post.content|truncatechars:120 }}</blockquote>
+						<figcaption>— {{ post.author_name }}</figcaption>
+					</figure>
+				{% empty %}
+					<figure class="testimonial active">
+						<blockquote>Share your first PetLink story today.</blockquote>
+						<figcaption>— PetLink Community</figcaption>
+					</figure>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+{% endblock %}
+

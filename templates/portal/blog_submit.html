@@ -1,0 +1,29 @@
+{% extends "portal/base.html" %}
+{% block title %}Share a Story — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Share your pet tips & stories</h1>
+			<p>Your experience can help other pet parents.</p>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container" style="max-width: 720px;">
+			<form method="post" enctype="multipart/form-data" class="stack-form">
+				{% csrf_token %}
+				{% for field in form %}
+					<label>
+						<span>{{ field.label }}</span>
+						{{ field }}
+						{% for error in field.errors %}
+							<small class="error">{{ error }}</small>
+						{% endfor %}
+					</label>
+				{% endfor %}
+				<button class="btn btn-primary" type="submit">Publish story</button>
+			</form>
+		</div>
+	</section>
+{% endblock %}
+
