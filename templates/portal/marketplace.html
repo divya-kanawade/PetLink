@@ -1,0 +1,66 @@
+{% extends "portal/base.html" %}
+{% block title %}Buy & Sell Pets — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Buy & Sell Pet Listings</h1>
+			<p>Browse verified adopters and list your pet safely.</p>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container">
+			<form class="filter-row" method="get">
+				<select name="species">
+					<option value="">All species</option>
+					<option value="dog" {% if request.GET.species == "dog" %}selected{% endif %}>Dogs</option>
+					<option value="cat" {% if request.GET.species == "cat" %}selected{% endif %}>Cats</option>
+				</select>
+				<select name="status">
+					<option value="">Any status</option>
+					<option value="available" {% if request.GET.status == "available" %}selected{% endif %}>Available</option>
+					<option value="reserved" {% if request.GET.status == "reserved" %}selected{% endif %}>Reserved</option>
+					<option value="adopted" {% if request.GET.status == "adopted" %}selected{% endif %}>Adopted</option>
+				</select>
+				<button class="btn btn-outline" type="submit">Filter</button>
+			</form>
+			<div class="card-grid">
+				{% for pet in pets %}
+					<article class="card pet-card">
+						{% if pet.image %}
+							<img src="{{ pet.image.url }}" alt="{{ pet.name }}" />
+						{% endif %}
+						<div class="card-body">
+							<h3>{{ pet.name }} · {{ pet.get_species_display }}</h3>
+							<p>{{ pet.breed|default:"Mixed" }} · {{ pet.location|default:"Location TBD" }}</p>
+							<p>₹{{ pet.price|default:"-" }} · {{ pet.get_status_display }}</p>
+						</div>
+					</article>
+				{% empty %}
+					<p>No listings yet.</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+
+	<section class="section alt reveal">
+		<div class="container">
+			<h2>List a pet</h2>
+			<form method="post" enctype="multipart/form-data" class="stack-form">
+				{% csrf_token %}
+				{{ form.non_field_errors }}
+				{% for field in form %}
+					<label>
+						<span>{{ field.label }}</span>
+						{{ field }}
+						{% for error in field.errors %}
+							<small class="error">{{ error }}</small>
+						{% endfor %}
+					</label>
+				{% endfor %}
+				<button class="btn btn-primary" type="submit">Submit listing</button>
+			</form>
+		</div>
+	</section>
+{% endblock %}
+

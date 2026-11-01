@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PetLink</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .signup-link p {
+            margin: 0 0 10px 0;
+            color: #666;
+        }
+        .signup-btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .signup-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    {% include 'portal/navbar.html' %}
+    
+    <div class="login-container">
+        <h2 style="text-align: center; margin-bottom: 30px;">Login</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
+            </div>
+            
+            <button type="submit" style="width: 100%; padding: 12px; background: #007BFF; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                Sign In
+            </button>
+        </form>
+        
+        <div class="signup-link">
+            <p>Don't have an account?</p>
+            <a href="{% url 'signup' %}" class="signup-btn">Create Account</a>
+        </div>
+    </div>
+    
+    {% include 'portal/footer.html' %}
+</body>
+</html>
+

@@ -1,0 +1,46 @@
+{% extends "portal/base.html" %}
+{% block title %}Pet Health Tracker — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Pet Health History</h1>
+			<p>Keep vaccinations, vet visits, and wellness notes in one place.</p>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container two-col">
+			<div>
+				<h2>Latest records</h2>
+				<div class="timeline">
+					{% for record in records %}
+						<article>
+							<h3>{{ record.pet_name }} — {{ record.visit_date }}</h3>
+							<p>{{ record.reason|default:"Routine check-up" }}</p>
+							<small>{{ record.vet_name }} · {{ record.clinic }}</small>
+						</article>
+					{% empty %}
+						<p>Add your first record to begin tracking.</p>
+					{% endfor %}
+				</div>
+			</div>
+			<div>
+				<h2>Add record</h2>
+				<form method="post" enctype="multipart/form-data" class="stack-form">
+					{% csrf_token %}
+					{% for field in form %}
+						<label>
+							<span>{{ field.label }}</span>
+							{{ field }}
+							{% for error in field.errors %}
+								<small class="error">{{ error }}</small>
+							{% endfor %}
+						</label>
+					{% endfor %}
+					<button class="btn btn-primary" type="submit">Save record</button>
+				</form>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+

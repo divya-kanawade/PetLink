@@ -1,0 +1,54 @@
+{% extends "portal/base.html" %}
+{% block title %}Lost & Found — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Lost & Found</h1>
+			<p>Report lost pets or browse recent sightings.</p>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container two-col">
+			<div>
+				<h2>Recent reports</h2>
+				<div class="card-grid">
+					{% for report in reports %}
+						<article class="card pet-card">
+							{% if report.photo %}
+								<img src="{{ report.photo.url }}" alt="{{ report.pet_name }}" />
+							{% endif %}
+							<div class="card-body">
+								<h3>{{ report.pet_name }} — {{ report.get_status_display }}</h3>
+								<p>{{ report.last_seen_location }}</p>
+								<p>{{ report.description|truncatechars:120 }}</p>
+								<small>Contact: {{ report.contact_name }} · {{ report.contact_phone|default:"Email only" }}</small>
+							</div>
+						</article>
+					{% empty %}
+						<p>No reports yet.</p>
+					{% endfor %}
+				</div>
+			</div>
+			<div>
+				<h2>Add a report</h2>
+				<form method="post" enctype="multipart/form-data" class="stack-form">
+					{% csrf_token %}
+					{{ form.non_field_errors }}
+					{% for field in form %}
+						<label>
+							<span>{{ field.label }}</span>
+							{{ field }}
+							{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+							{% for error in field.errors %}
+								<small class="error">{{ error }}</small>
+							{% endfor %}
+						</label>
+					{% endfor %}
+					<button class="btn btn-primary" type="submit">Submit</button>
+				</form>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+

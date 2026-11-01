@@ -1,0 +1,36 @@
+{% extends "portal/base.html" %}
+{% block title %}Pet Stories & Tips — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Tips and stories</h1>
+			<p>Read community experiences or share your own.</p>
+			<form method="get" class="stack-form" style="max-width: 400px; margin-inline: auto;">
+				<input type="search" name="q" placeholder="Search stories" value="{{ query }}" />
+				<button class="btn btn-outline" type="submit">Search</button>
+			</form>
+			<a class="btn btn-primary" href="{% url 'blog_submit' %}">Share your story</a>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container card-grid">
+			{% for post in posts %}
+				<article class="card">
+					{% if post.cover_image %}
+						<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
+					{% endif %}
+					<div class="card-body">
+						<h3>{{ post.title }}</h3>
+						<p>{{ post.excerpt|default:post.content|truncatechars:140 }}</p>
+						<small>By {{ post.author_name }} · {{ post.published_at|date:"M d, Y" }}</small>
+						<a class="btn btn-soft" href="{% url 'blog_detail' slug=post.slug %}">Read story</a>
+					</div>
+				</article>
+			{% empty %}
+				<p>No blog posts yet.</p>
+			{% endfor %}
+		</div>
+	</section>
+{% endblock %}
+

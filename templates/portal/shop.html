@@ -1,0 +1,42 @@
+{% extends "portal/base.html" %}
+{% block title %}Pet Shop — PetLink{% endblock %}
+{% block content %}
+	<section class="page-hero">
+		<div class="container reveal">
+			<h1>Pet essentials store</h1>
+			<p>Food, toys, grooming, and accessories curated for cats and dogs.</p>
+		</div>
+	</section>
+
+	<section class="section reveal">
+		<div class="container">
+			<form class="filter-row" method="get">
+				<select name="category">
+					<option value="">All categories</option>
+					{% for key, label in products.model.CATEGORY_CHOICES %}
+						<option value="{{ key }}" {% if request.GET.category == key %}selected{% endif %}>{{ label }}</option>
+					{% endfor %}
+				</select>
+				<button class="btn btn-outline" type="submit">Apply</button>
+			</form>
+			<div class="card-grid">
+				{% for product in products %}
+					<article class="card">
+						{% if product.image %}
+							<img src="{{ product.image.url }}" alt="{{ product.name }}" />
+						{% endif %}
+						<div class="card-body">
+							<h3>{{ product.name }}</h3>
+							<p>{{ product.get_category_display }} · ₹{{ product.price }}</p>
+							<p>{{ product.description|truncatechars:120 }}</p>
+							<small>In stock: {{ product.inventory }}</small>
+						</div>
+					</article>
+				{% empty %}
+					<p>No products found.</p>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+{% endblock %}
+
