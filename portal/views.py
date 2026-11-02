@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.text import slugify
-from django.contrib.auth import login
 
 from .forms import (
     ContactForm,
@@ -15,8 +16,16 @@ from .forms import (
     PetListingForm,
     StoryForm,
     PetLinkUserCreationForm,
+    UserProfileForm,
 )
-from .models import BlogPost, HealthRecord, LostPetReport, PetListing, Product
+from .models import (
+    BlogPost,
+    HealthRecord,
+    LostPetReport,
+    PetListing,
+    Product,
+    UserProfile,
+)
 
 
 def home(request):
@@ -232,4 +241,37 @@ def signup_view(request):
         request,
         "registration/signup.html",
         {"form": form},
+    )
+
+
+@login_required
+def profile_view(request):
+    profile, created = UserProfile.objects.get_or_create(
+        user=request.user
+    )
+
+    if request.method == "POST":
+        form = UserProfileForm(
+            request.POST,
+            request.FILES,
+            instance=profile,
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                "Your profile has been updated successfully!"
+            )
+            return redirect("profile")
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(
+        request,
+        "portal/profile.html",
+        {
+            "form": form,
+            "profile": profile,
+        },
     )

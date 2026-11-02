@@ -5,7 +5,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import BlogPost, ContactMessage, HealthRecord, LostPetReport, PetListing
+from .models import (
+    BlogPost,
+    ContactMessage,
+    HealthRecord,
+    LostPetReport,
+    PetListing,
+    UserProfile,
+)
 
 
 class StyledModelForm(forms.ModelForm):
@@ -104,10 +111,12 @@ class StoryForm(StyledModelForm):
 class PetLinkUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
-        widget=forms.EmailInput(attrs={
-            "placeholder": "Enter your email",
-            "class": "input-control",
-        })
+        widget=forms.EmailInput(
+            attrs={
+                "placeholder": "Enter your email",
+                "class": "input-control",
+            }
+        ),
     )
 
     class Meta:
@@ -123,3 +132,28 @@ class PetLinkUserCreationForm(UserCreationForm):
             )
 
         return email
+
+
+class UserProfileForm(StyledModelForm):
+    class Meta:
+        model = UserProfile
+        fields = [
+            "phone",
+            "location",
+            "bio",
+            "profile_picture",
+        ]
+        widgets = {
+            "phone": forms.TextInput(
+                attrs={"placeholder": "Enter your phone number"}
+            ),
+            "location": forms.TextInput(
+                attrs={"placeholder": "Enter your city"}
+            ),
+            "bio": forms.Textarea(
+                attrs={
+                    "placeholder": "Tell us about yourself",
+                    "rows": 4,
+                }
+            ),
+        }

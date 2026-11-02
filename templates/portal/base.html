@@ -34,6 +34,10 @@
 
                     {% if user.is_authenticated %}
                     <li>
+                        <a href="{% url 'profile' %}">My Profile</a>
+                    </li>
+
+                    <li>
                         <form method="post" action="{% url 'logout' %}" style="margin: 0; padding: 0;">
                             {% csrf_token %}
                             <button
@@ -65,6 +69,9 @@
                     {% else %}
                     <li>
                         <a href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'signup' %}">Sign Up</a>
                     </li>
                     {% endif %}
                 </ul>
