@@ -1,0 +1,149 @@
+
+{% extends "portal/base.html" %}
+{% block title %}My Profile — PetLink{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container reveal">
+        <h1>My Profile 🐾</h1>
+        <p>Manage your personal information and make your PetLink profile yours.</p>
+    </div>
+</section>
+
+<section class="section reveal">
+    <div class="container contact-grid">
+
+        <!-- Personal Information Form -->
+        <form class="contact-form profile-form"
+              method="post"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <h2>Personal Information</h2>
+
+            <!-- Current Profile Picture -->
+            {% if profile.profile_picture %}
+            <div class="profile-picture-preview">
+                <img
+                    src="{{ profile.profile_picture.url }}"
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                />
+            </div>
+            {% endif %}
+
+            <!-- Phone Number -->
+            <div class="profile-field">
+                {{ form.phone.label_tag }}
+                {{ form.phone }}
+
+                {% for error in form.phone.errors %}
+                    <p class="profile-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Location -->
+            <div class="profile-field">
+                {{ form.location.label_tag }}
+                {{ form.location }}
+
+                {% for error in form.location.errors %}
+                    <p class="profile-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-field">
+                {{ form.bio.label_tag }}
+                {{ form.bio }}
+
+                {% for error in form.bio.errors %}
+                    <p class="profile-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Profile Picture Upload -->
+            <div class="profile-field">
+                {{ form.profile_picture.label_tag }}
+                {{ form.profile_picture }}
+
+                {% for error in form.profile_picture.errors %}
+                    <p class="profile-error">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- General Errors -->
+            {% if form.non_field_errors %}
+                <div class="profile-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Save Button -->
+            <button type="submit" class="btn btn-primary">
+                Save Profile
+            </button>
+
+        </form>
+
+        <!-- Professional Profile Card -->
+        <div class="profile-card">
+
+            <!-- Card Header -->
+            <div class="profile-card-header">
+                <span>🐾 PetLink Member</span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="profile-card-body">
+
+                <!-- Avatar -->
+                {% if profile.profile_picture %}
+                <img
+                    src="{{ profile.profile_picture.url }}"
+                    alt="Profile Picture"
+                    class="profile-card-avatar"
+                />
+                {% else %}
+                <div class="profile-card-avatar profile-card-placeholder">
+                    🐶
+                </div>
+                {% endif %}
+
+                <!-- Username -->
+                <h2>{{ request.user.username }}</h2>
+
+                <!-- Email -->
+                <p class="profile-card-email">
+                    {{ request.user.email|default:"Email not provided" }}
+                </p>
+
+                <!-- Profile Details -->
+                <div class="profile-card-details">
+
+                    <p>
+                        <span>📍</span>
+                        {{ profile.location|default:"Location not added" }}
+                    </p>
+
+                    <p>
+                        <span>📞</span>
+                        {{ profile.phone|default:"Phone not added" }}
+                    </p>
+
+                </div>
+
+                <!-- Badge -->
+                <div class="profile-card-badge">
+                    💙 Proud Pet Lover
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
