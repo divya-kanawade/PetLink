@@ -1,66 +1,418 @@
+
 {% extends "portal/base.html" %}
+
 {% block title %}Buy & Sell Pets — PetLink{% endblock %}
+
 {% block content %}
-	<section class="page-hero">
-		<div class="container reveal">
-			<h1>Buy & Sell Pet Listings</h1>
-			<p>Browse verified adopters and list your pet safely.</p>
-		</div>
-	</section>
 
-	<section class="section reveal">
-		<div class="container">
-			<form class="filter-row" method="get">
-				<select name="species">
-					<option value="">All species</option>
-					<option value="dog" {% if request.GET.species == "dog" %}selected{% endif %}>Dogs</option>
-					<option value="cat" {% if request.GET.species == "cat" %}selected{% endif %}>Cats</option>
-				</select>
-				<select name="status">
-					<option value="">Any status</option>
-					<option value="available" {% if request.GET.status == "available" %}selected{% endif %}>Available</option>
-					<option value="reserved" {% if request.GET.status == "reserved" %}selected{% endif %}>Reserved</option>
-					<option value="adopted" {% if request.GET.status == "adopted" %}selected{% endif %}>Adopted</option>
-				</select>
-				<button class="btn btn-outline" type="submit">Filter</button>
-			</form>
-			<div class="card-grid">
-				{% for pet in pets %}
-					<article class="card pet-card">
-						{% if pet.image %}
-							<img src="{{ pet.image.url }}" alt="{{ pet.name }}" />
-						{% endif %}
-						<div class="card-body">
-							<h3>{{ pet.name }} · {{ pet.get_species_display }}</h3>
-							<p>{{ pet.breed|default:"Mixed" }} · {{ pet.location|default:"Location TBD" }}</p>
-							<p>₹{{ pet.price|default:"-" }} · {{ pet.get_status_display }}</p>
-						</div>
-					</article>
-				{% empty %}
-					<p>No listings yet.</p>
-				{% endfor %}
-			</div>
-		</div>
-	</section>
+<!-- MARKETPLACE HERO -->
+<section class="marketplace-hero">
+    <div class="container">
+        <div class="marketplace-hero-content">
+            <span class="marketplace-eyebrow">
+                WELCOME TO PETLINK
+            </span>
 
-	<section class="section alt reveal">
-		<div class="container">
-			<h2>List a pet</h2>
-			<form method="post" enctype="multipart/form-data" class="stack-form">
-				{% csrf_token %}
-				{{ form.non_field_errors }}
-				{% for field in form %}
-					<label>
-						<span>{{ field.label }}</span>
-						{{ field }}
-						{% for error in field.errors %}
-							<small class="error">{{ error }}</small>
-						{% endfor %}
-					</label>
-				{% endfor %}
-				<button class="btn btn-primary" type="submit">Submit listing</button>
-			</form>
-		</div>
-	</section>
+            <h1>
+                Find Your Perfect <span>Pet Companion</span>
+            </h1>
+
+            <p>
+                Discover pets from trusted owners and connect with
+                people who share your love for animals.
+            </p>
+
+            <div class="marketplace-hero-actions">
+                <a href="#pet-listings" class="btn btn-primary">
+                    Explore Pets
+                </a>
+
+                <a href="#sell-pet" class="btn btn-outline">
+                    Sell Your Pet
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- PET LISTINGS -->
+<section class="section marketplace-section" id="pet-listings">
+    <div class="container">
+
+        <!-- SECTION HEADING -->
+        <div class="marketplace-heading">
+            <div>
+                <span class="marketplace-section-label">
+                    PET MARKETPLACE
+                </span>
+
+                <h2>Find Your New Companion</h2>
+
+                <p>
+                    Browse available pets and connect with their owners.
+                </p>
+            </div>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'my_listings' %}"
+                   class="btn btn-primary">
+                    My Listings
+                </a>
+            {% endif %}
+        </div>
+
+
+        <!-- SEARCH AND FILTERS -->
+        <form method="GET"
+              action="{% url 'marketplace' %}"
+              class="marketplace-filter-form">
+
+            <div class="marketplace-search">
+                <span class="marketplace-search-icon">
+                    &#128269;
+                </span>
+
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Search pet name, breed, location..."
+                    value="{{ query|default:'' }}"
+                >
+            </div>
+
+            <div class="marketplace-filter-group">
+
+                <!-- SPECIES FILTER -->
+                <select name="species">
+                    <option value="">All Pets</option>
+
+                    {% for value, label in pets.model.SPECIES_CHOICES %}
+                        <option value="{{ value }}"
+                            {% if selected_species == value %}
+                                selected
+                            {% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <!-- STATUS FILTER -->
+                <select name="status">
+                    <option value="">All Statuses</option>
+
+                    {% for value, label in pets.model.STATUS_CHOICES %}
+                        <option value="{{ value }}"
+                            {% if selected_status == value %}
+                                selected
+                            {% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+
+                <a href="{% url 'marketplace' %}"
+                   class="btn btn-outline">
+                    Reset
+                </a>
+
+            </div>
+        </form>
+
+
+        <!-- LISTING RESULTS -->
+        <div class="marketplace-results-heading">
+            <h3>Pet Listings</h3>
+
+            <span>
+                {{ pets|length }} listing{{ pets|length|pluralize }}
+                found
+            </span>
+        </div>
+
+
+        <!-- PET CARDS -->
+        {% if pets %}
+
+            <div class="marketplace-grid">
+
+                {% for pet in pets %}
+
+                    <article class="marketplace-pet-card">
+
+                        <!-- PET IMAGE -->
+                        <a href="{% url 'pet_detail' pet.pk %}"
+                           class="marketplace-pet-link">
+
+                            <div class="marketplace-pet-image">
+
+                                {% if pet.image %}
+                                    <img
+                                        src="{{ pet.image.url }}"
+                                        alt="{{ pet.name }}"
+                                    >
+                                {% else %}
+                                    <div class="marketplace-pet-placeholder">
+                                        <span>&#128054;</span>
+                                        <p>PetLink</p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- FEATURED BADGE -->
+                                {% if pet.is_featured %}
+                                    <span class="marketplace-featured-badge">
+                                        &#9733; Featured
+                                    </span>
+                                {% endif %}
+
+                                <!-- STATUS BADGE -->
+                                <span class="marketplace-status-badge
+                                    {% if pet.status == 'available' %}
+                                        status-available
+                                    {% elif pet.status == 'reserved' %}
+                                        status-reserved
+                                    {% else %}
+                                        status-sold
+                                    {% endif %}">
+
+                                    {{ pet.get_status_display }}
+
+                                </span>
+
+                            </div>
+
+                        </a>
+
+
+                        <!-- PET INFORMATION -->
+                        <div class="marketplace-pet-body">
+
+                            <div class="marketplace-pet-title-row">
+                                <h3>{{ pet.name }}</h3>
+
+                                <span class="marketplace-pet-species">
+                                    {{ pet.get_species_display }}
+                                </span>
+                            </div>
+
+                            <p class="marketplace-pet-breed">
+                                {% if pet.breed %}
+                                    {{ pet.breed }}
+                                {% else %}
+                                    {{ pet.get_species_display }}
+                                {% endif %}
+                            </p>
+
+                            {% if pet.location %}
+                                <p class="marketplace-pet-location">
+                                    <span>&#128205;</span>
+                                    {{ pet.location }}
+                                </p>
+                            {% endif %}
+
+                            <!-- PRICE -->
+                            <div class="marketplace-pet-footer">
+
+                                <div class="marketplace-pet-price">
+                                    <span>Price</span>
+
+                                    <strong>
+                                        {% if pet.price %}
+                                            &#8377;{{ pet.price }}
+                                        {% else %}
+                                            Contact Seller
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <a href="{% url 'pet_detail' pet.pk %}"
+                                   class="marketplace-view-btn">
+                                    View Details
+                                    <span>&rarr;</span>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <!-- EMPTY STATE -->
+            <div class="marketplace-empty">
+
+                <div class="marketplace-empty-icon">
+                    &#128054;
+                </div>
+
+                <h3>No Pets Found</h3>
+
+                <p>
+                    We couldn't find any pets matching your search.
+                    Try changing your search or filters.
+                </p>
+
+                <a href="{% url 'marketplace' %}"
+                   class="btn btn-primary">
+                    View All Pets
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+
+<!-- SELL YOUR PET -->
+<section class="section marketplace-sell-section"
+         id="sell-pet">
+
+    <div class="container">
+
+        <div class="marketplace-sell-wrapper">
+
+            <!-- SELL INTRO -->
+            <div class="marketplace-sell-content">
+
+                <span class="marketplace-section-label">
+                    SELL WITH PETLINK
+                </span>
+
+                <h2>Find a Loving Buyer for Your Pet</h2>
+
+                <p>
+                    Create a listing and connect with people interested
+                    in purchasing your pet.
+                </p>
+
+                <div class="marketplace-sell-benefits">
+
+                    <div>
+                        <span>&#10003;</span>
+                        Easy listing creation
+                    </div>
+
+                    <div>
+                        <span>&#10003;</span>
+                        Manage your listings
+                    </div>
+
+                    <div>
+                        <span>&#10003;</span>
+                        Connect with interested buyers
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SELL FORM -->
+            <div class="marketplace-sell-form-card">
+
+                {% if user.is_authenticated %}
+
+                    <h3>Create Pet Listing</h3>
+
+                    <p>
+                        Fill in the details to list your pet.
+                    </p>
+
+                    <form method="POST"
+                          enctype="multipart/form-data"
+                          action="{% url 'marketplace' %}#sell-pet">
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="form-error">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        {% for field in form %}
+
+                            <div class="marketplace-form-field">
+
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+
+                                {{ field }}
+
+                                {% if field.help_text %}
+                                    <small>
+                                        {{ field.help_text }}
+                                    </small>
+                                {% endif %}
+
+                                {% if field.errors %}
+                                    <div class="form-error">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                        <button type="submit"
+                                class="btn btn-primary marketplace-submit-btn">
+                            Create Listing
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <div class="marketplace-login-prompt">
+
+                        <div class="marketplace-login-icon">
+                            &#128100;
+                        </div>
+
+                        <h3>Ready to Sell Your Pet?</h3>
+
+                        <p>
+                            Login or create an account to publish
+                            your pet listing.
+                        </p>
+
+                        <div class="marketplace-login-actions">
+
+                            <a href="{% url 'login' %}?next={% url 'marketplace' %}"
+                               class="btn btn-primary">
+                                Login
+                            </a>
+
+                            <a href="{% url 'signup' %}"
+                               class="btn btn-outline">
+                                Create Account
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}
-

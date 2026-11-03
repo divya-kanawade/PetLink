@@ -29,7 +29,7 @@ class PetListing(TimeStampedModel):
     STATUS_CHOICES = [
         ("available", "Available"),
         ("reserved", "Reserved"),
-        ("adopted", "Adopted"),
+        ("sold", "Sold"),
     ]
 
     title = models.CharField(max_length=120)

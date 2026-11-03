@@ -1,0 +1,218 @@
+
+{% extends "portal/base.html" %}
+
+{% block title %}{{ pet.name }} — PetLink{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container reveal">
+        <h1>{{ pet.name }}</h1>
+        <p>{{ pet.title }}</p>
+    </div>
+</section>
+
+<section class="section reveal">
+    <div class="container">
+
+        <div class="pet-detail-layout">
+
+            <!-- Pet Image -->
+            <div class="pet-detail-image">
+
+                {% if pet.image %}
+                    <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                {% else %}
+                    <div class="pet-image-placeholder">
+                        <span>🐾 No image available</span>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Pet Information -->
+            <div class="pet-detail-content">
+
+                <div class="pet-detail-header">
+
+                    <span class="pet-status status-{{ pet.status }}">
+                        {{ pet.get_status_display }}
+                    </span>
+
+                    <h2>{{ pet.name }}</h2>
+
+                    <p class="pet-subtitle">
+                        {{ pet.breed|default:"Mixed breed" }}
+                        · {{ pet.get_species_display }}
+                    </p>
+
+                    <div class="pet-price">
+                        {% if pet.price %}
+                            ₹{{ pet.price }}
+                        {% else %}
+                            Price not specified
+                        {% endif %}
+                    </div>
+
+                    {% if pet.location %}
+                        <p class="pet-location">
+                            <span>📍</span> {{ pet.location }}
+                        </p>
+                    {% endif %}
+
+                </div>
+
+                <!-- Pet Specifications -->
+                <div class="pet-info-grid">
+
+                    <div class="pet-info-box">
+                        <span>Species</span>
+                        <strong>{{ pet.get_species_display }}</strong>
+                    </div>
+
+                    <div class="pet-info-box">
+                        <span>Gender</span>
+                        <strong>{{ pet.get_gender_display }}</strong>
+                    </div>
+
+                    <div class="pet-info-box">
+                        <span>Age</span>
+                        <strong>
+                            {% if pet.age_years %}
+                                {{ pet.age_years }} years
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    <div class="pet-info-box">
+                        <span>Breed</span>
+                        <strong>{{ pet.breed|default:"Mixed" }}</strong>
+                    </div>
+
+                </div>
+
+                <!-- Description -->
+                <div class="pet-description">
+
+                    <h3>About {{ pet.name }}</h3>
+
+                    {% if pet.description %}
+                        {{ pet.description|linebreaks }}
+                    {% else %}
+                        <p>No description provided by the seller.</p>
+                    {% endif %}
+
+                </div>
+
+                <!-- Seller -->
+                <div class="pet-seller-box">
+
+                    <h3>Seller Information</h3>
+
+                    {% if pet.listed_by %}
+
+                        <div class="seller-details">
+
+                            <div class="seller-avatar">
+                                {{ pet.listed_by.username|first|upper }}
+                            </div>
+
+                            <div class="seller-text">
+                                <strong>{{ pet.listed_by.username }}</strong>
+
+                                {% if pet.listed_by.profile.location %}
+                                    <p>{{ pet.listed_by.profile.location }}</p>
+                                {% else %}
+                                    <p>PetLink Seller</p>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                    {% else %}
+
+                        <p>Seller information is unavailable.</p>
+
+                    {% endif %}
+
+                </div>
+
+                <!-- Actions -->
+                <div class="pet-detail-actions">
+
+                    {% if pet.status == "available" %}
+
+                        {% if pet.listed_by %}
+
+                            {% if user.is_authenticated %}
+
+                                {% if user == pet.listed_by %}
+
+                                    <a href="{% url 'edit_pet_listing' pet.pk %}"
+                                       class="btn btn-primary">
+                                        Edit Your Listing
+                                    </a>
+
+                                {% else %}
+
+                                    {% if pet.listed_by.email %}
+
+                                        <a href="mailto:{{ pet.listed_by.email }}?subject=Interested%20in%20{{ pet.name }}"
+                                           class="btn btn-primary">
+                                            Contact Seller
+                                        </a>
+
+                                    {% else %}
+
+                                        <p>Seller has not provided an email address.</p>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <a href="{% url 'login' %}?next={{ request.path }}"
+                                   class="btn btn-primary">
+                                    Login to Contact Seller
+                                </a>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <p>Seller information is unavailable.</p>
+
+                        {% endif %}
+
+                    {% elif pet.status == "reserved" %}
+
+                        <p class="pet-notice">
+                            This pet is currently reserved.
+                        </p>
+
+                    {% elif pet.status == "sold" %}
+
+                        <p class="pet-notice">
+                            This pet has already been sold.
+                        </p>
+
+                    {% endif %}
+
+                    <a href="{% url 'marketplace' %}"
+                       class="btn btn-outline">
+                        ← Back to Marketplace
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

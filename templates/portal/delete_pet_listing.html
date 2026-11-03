@@ -1,0 +1,96 @@
+
+{% extends "portal/base.html" %}
+
+{% block title %}Delete Pet Listing — PetLink{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container reveal">
+        <h1>Delete Pet Listing</h1>
+        <p>Review the listing before permanently removing it.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        <div class="delete-listing-card">
+
+            <div class="delete-warning-icon">
+                !
+            </div>
+
+            <h2>Are you sure you want to delete this listing?</h2>
+
+            <p class="delete-warning-text">
+                This action is permanent. Once deleted, this pet listing
+                cannot be recovered.
+            </p>
+
+            <div class="delete-listing-preview">
+
+                {% if listing.image %}
+                    <img
+                        src="{{ listing.image.url }}"
+                        alt="{{ listing.name }}"
+                        class="delete-pet-image"
+                    >
+                {% else %}
+                    <div class="delete-pet-placeholder">
+                        🐾
+                    </div>
+                {% endif %}
+
+                <div class="delete-listing-details">
+                    <h3>{{ listing.name }}</h3>
+
+                    <p>{{ listing.title }}</p>
+
+                    <span>
+                        {{ listing.get_species_display }}
+                        {% if listing.breed %}
+                            · {{ listing.breed }}
+                        {% endif %}
+                    </span>
+
+                    <div class="delete-listing-price">
+                        {% if listing.price %}
+                            ₹{{ listing.price }}
+                        {% else %}
+                            Price not specified
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="delete-listing-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                    >
+                        Yes, Delete Listing
+                    </button>
+
+                    <a
+                        href="{% url 'my_listings' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

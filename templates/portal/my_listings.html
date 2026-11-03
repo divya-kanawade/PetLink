@@ -1,0 +1,162 @@
+
+{% extends "portal/base.html" %}
+
+{% block title %}My Listings — PetLink{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container reveal">
+        <h1>My Pet Listings</h1>
+        <p>Manage your pets, update prices, and track your sales.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        <div class="section-heading">
+            <div>
+                <h2>Your Listings</h2>
+                <p class="muted">Manage all your pets listed on PetLink.</p>
+            </div>
+
+            <a href="{% url 'marketplace' %}" class="btn btn-primary">
+                + Sell a Pet
+            </a>
+        </div>
+
+        {% if listings %}
+
+        <div class="my-listings-grid">
+
+            {% for pet in listings %}
+
+            <article class="my-listing-card {% if pet.status == 'sold' %}my-listing-sold{% endif %}">
+
+                <div class="my-listing-image-wrap">
+
+                    {% if pet.image %}
+                        <img
+                            src="{{ pet.image.url }}"
+                            alt="{{ pet.name }}"
+                            class="my-listing-image"
+                        >
+                    {% else %}
+                        <div class="my-listing-placeholder">
+                            <span>No Image Available</span>
+                        </div>
+                    {% endif %}
+
+                    <span class="my-listing-status status-{{ pet.status }}">
+                        {{ pet.get_status_display }}
+                    </span>
+
+                </div>
+
+                <div class="my-listing-content">
+
+                    <h3>{{ pet.name }}</h3>
+
+                    <p class="my-listing-title">{{ pet.title }}</p>
+
+                    <div class="my-listing-info">
+                        <span>
+                            <strong>Species:</strong>
+                            {{ pet.get_species_display }}
+                        </span>
+
+                        <span>
+                            <strong>Breed:</strong>
+                            {{ pet.breed|default:"Not specified" }}
+                        </span>
+
+                        <span>
+                            <strong>Location:</strong>
+                            {{ pet.location|default:"Not specified" }}
+                        </span>
+                    </div>
+
+                    <div class="my-listing-price">
+                        {% if pet.price %}
+                            ₹{{ pet.price }}
+                        {% else %}
+                            Price not specified
+                        {% endif %}
+                    </div>
+
+                    <div class="my-listing-actions">
+
+                        <a
+                            href="{% url 'pet_detail' pet.pk %}"
+                            class="btn btn-outline"
+                        >
+                            View
+                        </a>
+
+                        {% if pet.status != "sold" %}
+
+                            <a
+                                href="{% url 'edit_pet_listing' pet.pk %}"
+                                class="btn btn-primary"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{% url 'mark_pet_sold' pet.pk %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-secondary"
+                                    onclick="return confirm('Mark this pet as sold?');"
+                                >
+                                    Mark Sold
+                                </button>
+                            </form>
+
+                        {% endif %}
+
+                        <a
+                            href="{% url 'delete_pet_listing' pet.pk %}"
+                            class="btn btn-danger"
+                        >
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="my-listings-empty">
+            <div class="my-listings-empty-icon">🐾</div>
+
+            <h2>No listings yet</h2>
+
+            <p>
+                You haven't listed any pets for sale.
+                Start selling and connect with buyers on PetLink.
+            </p>
+
+            <a href="{% url 'marketplace' %}" class="btn btn-primary">
+                Sell Your First Pet
+            </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}
